@@ -1,0 +1,25 @@
+{
+  "name": "survey-app",
+  "version": "1.0.0",
+  "description": "A rate limiter application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "mocha specs --colors",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "chai": "^4.3.7",
+    "nodemon": "^2.0.22"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": ["express", "api", "survey"],
+  "author": "",
+  "license": "ISC"
+}
