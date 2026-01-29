@@ -1,7 +1,6 @@
 const createApp = require("./main");
 const Database = require("./services/db");
-
-const PORT = process.env.PORT || 3000;
+const { SERVER_CONFIG } = require("./config/constants");
 
 async function startServer() {
   const db = new Database();
@@ -11,10 +10,10 @@ async function startServer() {
 
     const app = createApp({ db });
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`❤️  Health: http://localhost:${PORT}/health`);
-      console.log(`📋 Surveys: http://localhost:${PORT}/surveys`);
+    app.listen(SERVER_CONFIG.PORT, () => {
+      console.log(
+        `🚀 Server running: http://${SERVER_CONFIG.HOST}:${SERVER_CONFIG.PORT}/`,
+      );
     });
   } catch (error) {
     console.error("❌ Failed to start server:", error);

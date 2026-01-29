@@ -150,7 +150,8 @@ class Database {
     await this.exec(`
       INSERT INTO surveys (title, creator_id) VALUES
         ('Customer Satisfaction', 1),
-        ('Product Feedback', 1);
+        ('Product Feedback', 1),
+        ('Internal Team Review', 1);
     `);
 
     await this.exec(`
@@ -158,7 +159,8 @@ class Database {
         (1, 1),
         (1, 2),
         (2, 1),
-        (2, 2);
+        (2, 2),
+        (3, 1);
     `);
 
     await this.exec(`
@@ -167,7 +169,9 @@ class Database {
         (1, 'Would you recommend us?', 'BOOLEAN', NULL, NULL),
         (1, 'Additional feedback', 'TEXT', NULL, NULL),
         (2, 'Rate the product quality', 'RATING', 1, 10),
-        (2, 'What did you like most?', 'TEXT', NULL, NULL);
+        (2, 'What did you like most?', 'TEXT', NULL, NULL),
+        (3, 'How effective is our team communication?', 'RATING', 1, 10),
+        (3, 'Any suggestions for team improvement?', 'TEXT', NULL, NULL);
     `);
 
     await this.exec(`

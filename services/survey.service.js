@@ -6,12 +6,21 @@ class SurveyService {
     this.db = db;
   }
 
-  async list() {
-    const rows = await this.db.query(SURVEY_QUERIES.LIST_SURVEYS);
+  async listForUser(userId) {
+    const rows = await this.db.query(SURVEY_QUERIES.LIST_SURVEYS_FOR_USER, [userId]);
 
     return rows.map((row) => ({
       ...row,
       access_users: JSON.parse(row.access_users),
+      questions: JSON.parse(row.questions),
+    }));
+  }
+
+  async list() {
+    const rows = await this.db.query(SURVEY_QUERIES.LIST_SURVEYS, []);
+
+    return rows.map((row) => ({
+      ...row,
       questions: JSON.parse(row.questions),
     }));
   }

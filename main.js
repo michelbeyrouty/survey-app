@@ -3,6 +3,7 @@ const DB = require("./services/db");
 const SurveyService = require("./services/survey.service");
 const SurveyController = require("./controllers/survey.controller");
 const errorHandlerMiddleware = require("./middlewares/errorHandler");
+const { requireAnyRole } = require("./middlewares/auth");
 
 function createApp() {
   const app = express();
@@ -12,11 +13,11 @@ function createApp() {
   const surveyService = new SurveyService(db);
   const surveyController = new SurveyController(surveyService);
 
-  app.get("/surveys", surveyController.list);
-
   app.get("/health", (req, res) => {
     res.send("Hello World!");
   });
+
+  app.get("/surveys", requireAnyRole(), surveyController.list);
 
   app.use(errorHandlerMiddleware);
 
