@@ -19,15 +19,15 @@ class Database {
       });
 
       const db = await this.dbPromise;
-      await db.exec("PRAGMA foreign_keys = ON;");
+      await db.run("PRAGMA foreign_keys = ON;");
     }
 
     return this.dbPromise;
   }
 
-  async exec(sql) {
+  async run(sql, params = []) {
     const db = await this.getDb();
-    return db.exec(sql);
+    return db.run(sql, params);
   }
 
   async query(sql, params = []) {
@@ -50,7 +50,7 @@ class Database {
   async init() {
     try {
       // Users
-      await this.exec(`
+      await this.run(`
         CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY,
           name TEXT NOT NULL,
@@ -59,7 +59,7 @@ class Database {
       `);
 
       // Surveys
-      await this.exec(`
+      await this.run(`
         CREATE TABLE IF NOT EXISTS surveys (
           id INTEGER PRIMARY KEY,
           title TEXT NOT NULL,
@@ -70,7 +70,7 @@ class Database {
       `);
 
       // Survey Access (many-to-many)
-      await this.exec(`
+      await this.run(`
         CREATE TABLE IF NOT EXISTS survey_access (
           survey_id INTEGER NOT NULL,
           user_id INTEGER NOT NULL,
@@ -82,7 +82,7 @@ class Database {
       `);
 
       // Questions
-      await this.exec(`
+      await this.run(`
         CREATE TABLE IF NOT EXISTS questions (
           id INTEGER PRIMARY KEY,
           survey_id INTEGER NOT NULL,
@@ -103,7 +103,7 @@ class Database {
       `);
 
       // Answers
-      await this.exec(`
+      await this.run(`
         CREATE TABLE IF NOT EXISTS answers (
           id INTEGER PRIMARY KEY,
           question_id INTEGER NOT NULL,
@@ -117,9 +117,7 @@ class Database {
       `);
 
       // Seed if empty
-      const [{ count }] = await this.query(
-        "SELECT COUNT(*) AS count FROM users",
-      );
+      const [{ count }] = await this.query("SELECT COUNT(*) AS count FROM users");
 
       if (count === 0) {
         await this.seed();
@@ -138,7 +136,7 @@ class Database {
   ======================= */
 
   async seed() {
-    await this.exec(`
+    await this.run(`
       INSERT INTO users (name, role) VALUES
         ('Admin User', 'ADMIN'),
         ('Sarah Admin', 'ADMIN'),
@@ -147,14 +145,14 @@ class Database {
         ('Mike Johnson', 'ANSWERER');
     `);
 
-    await this.exec(`
+    await this.run(`
       INSERT INTO surveys (title, creator_id) VALUES
         ('Customer Satisfaction', 1),
         ('Product Feedback', 1),
         ('Internal Team Review', 1);
     `);
 
-    await this.exec(`
+    await this.run(`
       INSERT INTO survey_access (survey_id, user_id) VALUES
         (1, 1),
         (1, 2),
@@ -163,7 +161,7 @@ class Database {
         (3, 1);
     `);
 
-    await this.exec(`
+    await this.run(`
       INSERT INTO questions (survey_id, text, type, rating_min, rating_max) VALUES
         (1, 'How satisfied are you with our service?', 'RATING', 1, 5),
         (1, 'Would you recommend us?', 'BOOLEAN', NULL, NULL),
@@ -174,7 +172,7 @@ class Database {
         (3, 'Any suggestions for team improvement?', 'TEXT', NULL, NULL);
     `);
 
-    await this.exec(`
+    await this.run(`
       INSERT INTO answers (question_id, user_id, value) VALUES
         (1, 2, '4'),
         (2, 2, 'true'),

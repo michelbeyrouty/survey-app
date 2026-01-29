@@ -77,6 +77,27 @@ const SURVEY_QUERIES = {
                 OR s.creator_id = ?
 
                 ORDER BY s.id;`,
+
+  CREATE_SURVEY: `
+    INSERT INTO surveys (title, creator_id)
+    VALUES (?, ?);
+  `,
+
+  GRANT_SURVEY_ACCESS: `
+    INSERT INTO survey_access (survey_id, user_id)
+    VALUES (?, ?);
+  `,
+
+  CREATE_QUESTION: `
+    INSERT INTO questions (
+      survey_id,
+      text,
+      type,
+      rating_min,
+      rating_max
+    )
+    VALUES (?, ?, ?, ?, ?);
+  `,
 };
 
 module.exports = {

@@ -3,7 +3,8 @@ const DB = require("./services/db");
 const SurveyService = require("./services/survey.service");
 const SurveyController = require("./controllers/survey.controller");
 const errorHandlerMiddleware = require("./middlewares/errorHandler");
-const { requireAnyRole } = require("./middlewares/auth");
+const asyncHandler = require("./middlewares/asyncHandler");
+const { requireAnyRole, requireAdmin } = require("./middlewares/auth");
 
 function createApp() {
   const app = express();
@@ -17,7 +18,8 @@ function createApp() {
     res.send("Hello World!");
   });
 
-  app.get("/surveys", requireAnyRole(), surveyController.list);
+  app.get("/surveys", requireAnyRole(), asyncHandler(surveyController.list));
+  app.post("/surveys", requireAdmin(), asyncHandler(surveyController.create));
 
   app.use(errorHandlerMiddleware);
 
