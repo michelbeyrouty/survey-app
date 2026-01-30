@@ -11,6 +11,7 @@ class SurveyController {
 
     this.share = this.share.bind(this);
     this.getById = this.getById.bind(this);
+    this.addQuestion = this.addQuestion.bind(this);
     this.list = this.list.bind(this);
     this.create = this.create.bind(this);
   }
@@ -55,6 +56,27 @@ class SurveyController {
     return res.json({
       success: true,
       message: "Survey access shared successfully.",
+    });
+  }
+
+  async addQuestion(req, res) {
+    const userId = req.user?.id;
+    const surveyId = req.params.id;
+    const { questions } = req.body;
+
+    this.validateQuestions(questions);
+
+    const survey = await this.surveyService.getById(surveyId);
+
+    if (survey.creator_id != userId) {
+      throw new BadRequestError("Only the creator of the survey can add questions.");
+    }
+
+    await this.surveyService.addQuestions(surveyId, questions);
+
+    return res.json({
+      success: true,
+      message: "Questions added successfully.",
     });
   }
 

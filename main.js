@@ -22,6 +22,7 @@ function createApp() {
 
   app.get("/surveys", requireAnyRole(), asyncHandler(surveyController.list));
   app.post("/surveys", requireAdmin(), asyncHandler(surveyController.create));
+  app.post("/surveys/:id/questions", requireAdmin(), asyncHandler(surveyController.addQuestion));
   app.get("/surveys/:id", requireAnyRole(), asyncHandler(surveyController.getById));
   app.post("/surveys/:id/share", requireAdmin(), asyncHandler(surveyController.share));
 

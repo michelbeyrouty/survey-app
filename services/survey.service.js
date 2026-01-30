@@ -64,6 +64,21 @@ class SurveyService {
 
     await this.db.run("COMMIT");
   }
+
+  async addQuestions(surveyId, questions) {
+    await this.db.run("BEGIN");
+
+    try {
+      for (const q of questions) {
+        await this.db.run(SURVEY_QUERIES.CREATE_QUESTION, [surveyId, q.text, q.type, q.rating_min || null, q.rating_max || null]);
+      }
+
+      await this.db.run("COMMIT");
+    } catch (err) {
+      await this.db.run("ROLLBACK");
+      throw err;
+    }
+  }
 }
 
 module.exports = SurveyService;
