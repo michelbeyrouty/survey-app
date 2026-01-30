@@ -43,6 +43,27 @@ class SurveyService {
       throw err;
     }
   }
+
+  async getById(surveyId) {
+    const rows = await this.db.query(SURVEY_QUERIES.GET_SURVEY_BY_ID, [surveyId]);
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    return {
+      ...rows[0],
+      questions: JSON.parse(rows[0].questions),
+    };
+  }
+
+  async shareAccess(surveyId, userIds) {
+    await this.db.run("BEGIN");
+
+    await Promise.all(userIds.map((userId) => this.db.run(SURVEY_QUERIES.SHARE_SURVEY_ACCESS, [surveyId, userId])));
+
+    await this.db.run("COMMIT");
+  }
 }
 
 module.exports = SurveyService;

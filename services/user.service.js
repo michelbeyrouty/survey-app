@@ -1,34 +1,20 @@
-const { sql } = require('./db');
-const AppError = require('../errors/AppError');
+const { USER_QUERIES } = require("./queries");
 
 class UserService {
+  constructor(db) {
+    this.db = db;
+  }
 
-    async getUser(userId){
-        try {
-            const users = await sql(
-                "SELECT id, name, role FROM users WHERE id = ?",
-                [userId]
-            );
-
-            if (users.length === 0) {
-                throw new AppError('User not found');
-            }
-
-            return users[0];
-        } catch (e) {
-            console.error(e);
-            throw new AppError("Internal server error");
-        }
+  async getUsersByIds(userIds = []) {
+    if (userIds.length === 0) {
+      return [];
     }
 
-    async getAllUsers(){
-        try {
-            return await sql("SELECT id, name, role FROM users");
-        } catch (e) {
-            console.error(e);
-            throw new AppError("Internal server error");
-        }
-    }
+    const placeholders = userIds.map(() => "?").join(", ");
+    const sql = USER_QUERIES.GET_USERS_BY_IDS.replace("%IDS%", placeholders);
+
+    return this.db.query(sql, userIds);
+  }
 }
 
 module.exports = UserService;
