@@ -1,7 +1,3 @@
-const BadRequestError = require("../errors/BadRequestError");
-const NotFoundError = require("../errors/NotFoundError");
-const { USER_ROLES } = require("../config/constants");
-
 class SurveyController {
   constructor(surveyService, userService, surveyValidator, surveyPolicy) {
     this.surveyService = surveyService;
@@ -18,45 +14,26 @@ class SurveyController {
   }
 
   async create(req, res) {
-    const userId = req.user?.id;
+    const userId = req.user.id;
     const survey = req.body;
 
     this.surveyValidator.validateSurvey(survey);
-
     await this.surveyService.create(userId, survey.title, survey.questions);
-    return res.json({
-      success: true,
-      message: "Survey created successfully.",
-    });
+
+    res.json({ success: true, message: "Survey created successfully." });
   }
 
   async getById(req, res) {
-    const surveyId = req.params.surveyId;
-
-    const survey = await this.surveyService.getById(surveyId);
-
-    return res.json({
-      success: true,
-      survey,
-    });
+    const survey = await this.surveyService.getById(req.params.surveyId);
+    res.json({ success: true, survey });
   }
 
   async list(req, res) {
-    const userId = req.user?.id;
-    const userRole = req.user?.role;
+    const { id: userId, role } = req.user;
 
-    let surveys = {};
+    const surveys = this.surveyPolicy.canListAll({ role }) ? await this.surveyService.list() : await this.surveyService.listForUser(userId);
 
-    if (this.surveyPolicy.canListAll({ role: userRole })) {
-      surveys = await this.surveyService.list();
-    } else {
-      surveys = await this.surveyService.listForUser(userId);
-    }
-
-    return res.json({
-      success: true,
-      surveys,
-    });
+    res.json({ success: true, surveys });
   }
 
   async share(req, res) {
@@ -69,32 +46,24 @@ class SurveyController {
     const users = await this.userService.getUsersByIds(userIds);
 
     this.surveyPolicy.ensureCanShare(users);
-
     await this.surveyService.shareAccess(surveyId, userIds);
 
-    res.json({
-      success: true,
-      message: "Survey access shared successfully.",
-    });
+    res.json({ success: true, message: "Survey access shared successfully." });
   }
 
   async addQuestion(req, res) {
-    const userId = req.user?.id;
+    const userId = req.user.id;
     const surveyId = req.params.surveyId;
     const { questions } = req.body;
 
     this.surveyValidator.validateQuestions(questions);
 
     const survey = await this.surveyService.getById(surveyId);
-
     this.surveyPolicy.ensureIsCreator(survey, userId);
 
     await this.surveyService.addQuestions(surveyId, questions);
 
-    return res.json({
-      success: true,
-      message: "Questions added successfully.",
-    });
+    res.json({ success: true, message: "Questions added successfully." });
   }
 
   async addResponse(req, res) {
@@ -108,12 +77,9 @@ class SurveyController {
     this.surveyValidator.validateQuestionsExist(responses, survey.questions);
     this.surveyValidator.validateResponsesMatchQuestions(responses, survey.questions);
 
-    console.log("Questions for survey:", survey.questions);
+    await this.surveyService.addResponses(surveyId, responses);
 
-    return res.json({
-      success: true,
-      message: "Response added successfully.",
-    });
+    res.json({ success: true, message: "Response added successfully." });
   }
 }
 

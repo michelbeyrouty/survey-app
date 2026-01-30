@@ -3,13 +3,7 @@ const BadRequestError = require("../errors/BadRequestError");
 class SurveyValidator {
   static QUESTION_TYPES = ["TEXT", "MULTIPLE_CHOICE", "RATING", "BOOLEAN"];
 
-  validateSurvey(survey) {
-    if (!survey) {
-      throw new BadRequestError("Survey data is required.");
-    }
-
-    const { title, questions } = survey;
-
+  validateSurvey({ title, questions }) {
     this.validateTitle(title);
     this.validateQuestions(questions);
   }
@@ -26,26 +20,23 @@ class SurveyValidator {
     }
 
     questions.forEach((q, index) => {
-      if (!q.text || typeof q.text !== "string" || !q.text.trim()) {
-        throw new BadRequestError(`Question ${index + 1}: 'text' must be a non-empty string.`);
+      if (!q.text || typeof q.text !== "string") {
+        throw new BadRequestError(`Question ${index + 1}: invalid text.`);
       }
 
-      if (!q.type || !this.QUESTION_TYPES.includes(q.type)) {
-        throw new BadRequestError(`Question ${index + 1}: 'type' must be one of: ${this.QUESTION_TYPES.join(", ")}.`);
+      if (!SurveyValidator.QUESTION_TYPES.includes(q.type)) {
+        throw new BadRequestError(`Question ${index + 1}: invalid type.`);
       }
 
       if (q.type === "RATING") {
         if (typeof q.rating_min !== "number" || typeof q.rating_max !== "number") {
-          throw new BadRequestError(`Question ${index + 1}: RATING type requires 'rating_min' and 'rating_max'.`);
+          throw new BadRequestError(`Question ${index + 1}: RATING requires rating_min and rating_max.`);
         }
-
         if (q.rating_min >= q.rating_max) {
-          throw new BadRequestError(`Question ${index + 1}: 'rating_min' must be less than 'rating_max'.`);
+          throw new BadRequestError(`Question ${index + 1}: rating_min must be < rating_max.`);
         }
-      }
-
-      if (q.rating_min !== undefined || q.rating_max !== undefined) {
-        throw new BadRequestError(`Question ${index + 1}: '${q.type}' should not have rating_min/max.`);
+      } else if (q.rating_min !== undefined || q.rating_max !== undefined) {
+        throw new BadRequestError(`Question ${index + 1}: rating_min/max only allowed for RATING.`);
       }
     });
   }
@@ -56,37 +47,30 @@ class SurveyValidator {
     }
   }
 
+  validateQuestionsExist(responses, questions) {
+    const ids = new Set(questions.map((q) => q.id));
+    if (responses.some((r) => !ids.has(r.question_id))) {
+      throw new BadRequestError("One or more question IDs do not exist.");
+    }
+  }
+
   validateResponsesMatchQuestions(responses, questions) {
     for (const resp of responses) {
       const question = questions.find((q) => q.id === resp.question_id);
 
       switch (question.type) {
         case "TEXT":
-          if (typeof resp.value !== "string") {
-            throw new BadRequestError(`Response for question ${question.id} must be a string.`);
-          }
+          if (typeof resp.value !== "string") throw new BadRequestError("Expected string response.");
           break;
         case "RATING":
           if (typeof resp.value !== "number" || resp.value < question.rating_min || resp.value > question.rating_max) {
-            throw new BadRequestError(`Response for question ${question.id} must be a number between ${question.rating_min} and ${question.rating_max}.`);
+            throw new BadRequestError("Invalid rating value.");
           }
           break;
         case "BOOLEAN":
-          if (typeof resp.value !== "boolean") {
-            throw new BadRequestError(`Response for question ${question.id} must be a boolean.`);
-          }
+          if (typeof resp.value !== "boolean") throw new BadRequestError("Expected boolean response.");
           break;
-        default:
-          throw new BadRequestError(`Unknown question type for question ${question.id}.`);
       }
-    }
-  }
-
-  validateQuestionsExist(responses, questions) {
-    const questionIds = new Set(questions.map((q) => q.id));
-
-    if (responses.some((r) => !questionIds.has(r.question_id))) {
-      throw new BadRequestError(`One or more question IDs do not exist in survey ${surveyId}.`);
     }
   }
 }
