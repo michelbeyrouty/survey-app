@@ -48,7 +48,7 @@ class SurveyService {
     const rows = await this.db.query(SURVEY_QUERIES.GET_SURVEY_BY_ID, [surveyId]);
 
     if (rows.length === 0) {
-      return null;
+      throw new NotFoundError(`Survey ${surveyId} not found`);
     }
 
     return {

@@ -49,6 +49,46 @@ class SurveyValidator {
       }
     });
   }
+
+  validateResponses(responses) {
+    if (!Array.isArray(responses) || responses.length === 0) {
+      throw new BadRequestError("Responses must be a non-empty array.");
+    }
+  }
+
+  validateResponsesMatchQuestions(responses, questions) {
+    for (const resp of responses) {
+      const question = questions.find((q) => q.id === resp.question_id);
+
+      switch (question.type) {
+        case "TEXT":
+          if (typeof resp.value !== "string") {
+            throw new BadRequestError(`Response for question ${question.id} must be a string.`);
+          }
+          break;
+        case "RATING":
+          if (typeof resp.value !== "number" || resp.value < question.rating_min || resp.value > question.rating_max) {
+            throw new BadRequestError(`Response for question ${question.id} must be a number between ${question.rating_min} and ${question.rating_max}.`);
+          }
+          break;
+        case "BOOLEAN":
+          if (typeof resp.value !== "boolean") {
+            throw new BadRequestError(`Response for question ${question.id} must be a boolean.`);
+          }
+          break;
+        default:
+          throw new BadRequestError(`Unknown question type for question ${question.id}.`);
+      }
+    }
+  }
+
+  validateQuestionsExist(responses, questions) {
+    const questionIds = new Set(questions.map((q) => q.id));
+
+    if (responses.some((r) => !questionIds.has(r.question_id))) {
+      throw new BadRequestError(`One or more question IDs do not exist in survey ${surveyId}.`);
+    }
+  }
 }
 
 module.exports = SurveyValidator;

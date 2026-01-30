@@ -47,10 +47,10 @@ class SurveyController {
 
     let surveys = {};
 
-    if (userRole === USER_ROLES.ADMIN) {
-      surveys = await this.surveyService.listForUser(userId);
-    } else {
+    if (this.surveyPolicy.canListAll({ role: userRole })) {
       surveys = await this.surveyService.list();
+    } else {
+      surveys = await this.surveyService.listForUser(userId);
     }
 
     return res.json({
@@ -65,12 +65,8 @@ class SurveyController {
 
     this.surveyValidator.validateSharePayload(userIds);
 
-    const survey = await this.surveyService.getById(surveyId);
+    await this.surveyService.getById(surveyId);
     const users = await this.userService.getUsersByIds(userIds);
-
-    if (!survey) {
-      throw new NotFoundError(`Survey with id ${surveyId} does not exist.`);
-    }
 
     this.surveyPolicy.ensureCanShare(users);
 
@@ -102,47 +98,17 @@ class SurveyController {
   }
 
   async addResponse(req, res) {
-    // const userId = req.user?.id;
     const surveyId = req.params.surveyId;
     const { responses } = req.body;
 
-    if (!Array.isArray(responses) || responses.length === 0) {
-      throw new BadRequestError("Responses must be a non-empty array.");
-    }
+    this.surveyValidator.validateResponses(responses);
 
-    const questions = await this.surveyService.getQuestionsBySurveyId(surveyId);
-    const questionIds = new Set(questions.map((q) => q.id));
+    const survey = await this.surveyService.getById(surveyId);
 
-    if (responses.find((r) => !questionIds.has(r.question_id))) {
-      throw new BadRequestError(`One or more question IDs do not exist in survey ${surveyId}.`);
-    }
+    this.surveyValidator.validateQuestionsExist(responses, survey.questions);
+    this.surveyValidator.validateResponsesMatchQuestions(responses, survey.questions);
 
-    // Validate that the value of the response matches the question type
-    for (const resp of responses) {
-      const question = questions.find((q) => q.id === resp.question_id);
-
-      switch (question.type) {
-        case "TEXT":
-          if (typeof resp.value !== "string") {
-            throw new BadRequestError(`Response for question ${question.id} must be a string.`);
-          }
-          break;
-        case "RATING":
-          if (typeof resp.value !== "number" || resp.value < question.rating_min || resp.value > question.rating_max) {
-            throw new BadRequestError(`Response for question ${question.id} must be a number between ${question.rating_min} and ${question.rating_max}.`);
-          }
-          break;
-        case "BOOLEAN":
-          if (typeof resp.value !== "boolean") {
-            throw new BadRequestError(`Response for question ${question.id} must be a boolean.`);
-          }
-          break;
-        default:
-          throw new BadRequestError(`Unknown question type for question ${question.id}.`);
-      }
-    }
-
-    console.log("Questions for survey:", questions);
+    console.log("Questions for survey:", survey.questions);
 
     return res.json({
       success: true,

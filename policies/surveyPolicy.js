@@ -23,6 +23,12 @@ class SurveyPolicy {
       throw new UnauthorizedError("You do not have access to this survey.");
     }
   }
+
+  canListAll(user) {
+    if (user.role !== USER_ROLES.ADMIN) {
+      throw new UnauthorizedError("Only ADMIN users can list all surveys.");
+    }
+  }
 }
 
 module.exports = SurveyPolicy;
