@@ -57,6 +57,10 @@ class SurveyService {
     };
   }
 
+  async getQuestionsBySurveyId(surveyId) {
+    return this.db.query(SURVEY_QUERIES.GET_QUESTIONS_BY_SURVEY_ID, [surveyId]);
+  }
+
   async shareAccess(surveyId, userIds) {
     await this.db.run("BEGIN");
 

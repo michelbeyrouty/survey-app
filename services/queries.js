@@ -146,6 +146,11 @@ const SURVEY_QUERIES = {
                 INSERT OR IGNORE INTO survey_access (survey_id, user_id)
                 VALUES (?, ?);
   `,
+
+  GET_QUESTIONS_BY_SURVEY_ID: `
+                SELECT id, type, rating_min, rating_max
+                FROM questions
+                WHERE survey_id = ?;`,
 };
 
 const USER_QUERIES = {

@@ -4,9 +4,11 @@ const SurveyService = require("./services/survey.service");
 const UserService = require("./services/user.service");
 const SurveyController = require("./controllers/survey.controller");
 const HealthController = require("./controllers/health.controller");
+const SurveyValidator = require("./validators/surveyValidator");
+const SurveyPolicy = require("./policies/surveyPolicy");
 const errorHandlerMiddleware = require("./middlewares/errorHandler");
 const asyncHandler = require("./middlewares/asyncHandler");
-const { requireAnyRole, requireAdmin } = require("./middlewares/auth");
+const { requireAnyRole, requireAdmin, requireAnswerer } = require("./middlewares/auth");
 
 function createApp() {
   const app = express();
@@ -15,16 +17,19 @@ function createApp() {
   const db = new DB();
   const surveyService = new SurveyService(db);
   const userService = new UserService(db);
-  const surveyController = new SurveyController(surveyService, userService);
+  const surveyValidator = new SurveyValidator();
+  const surveyPolicy = new SurveyPolicy();
+  const surveyController = new SurveyController(surveyService, userService, surveyValidator, surveyPolicy);
   const healthController = new HealthController();
 
   app.get("/health", asyncHandler(healthController.check));
 
   app.get("/surveys", requireAnyRole(), asyncHandler(surveyController.list));
   app.post("/surveys", requireAdmin(), asyncHandler(surveyController.create));
-  app.post("/surveys/:id/questions", requireAdmin(), asyncHandler(surveyController.addQuestion));
-  app.get("/surveys/:id", requireAnyRole(), asyncHandler(surveyController.getById));
-  app.post("/surveys/:id/share", requireAdmin(), asyncHandler(surveyController.share));
+  app.post("/surveys/:surveyId/questions", requireAdmin(), asyncHandler(surveyController.addQuestion));
+  app.post("/surveys/:surveyId/responses", requireAnswerer(), asyncHandler(surveyController.addResponse));
+  app.get("/surveys/:surveyId", requireAnyRole(), asyncHandler(surveyController.getById));
+  app.post("/surveys/:surveyId/share", requireAdmin(), asyncHandler(surveyController.share));
 
   app.use(errorHandlerMiddleware);
 
