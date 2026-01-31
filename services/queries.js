@@ -159,6 +159,12 @@ const USER_QUERIES = {
     FROM users
     WHERE id IN (%IDS%);
   `,
+
+  GET_USER_BY_ID: `
+    SELECT id, name, role
+    FROM users
+    WHERE id = ?;
+  `,
 };
 
 module.exports = {

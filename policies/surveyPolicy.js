@@ -3,12 +3,12 @@ const { USER_ROLES } = require("../config/constants");
 
 class SurveyPolicy {
   ensureIsCreator(survey, userId) {
-    if (survey.creator_id !== userId) {
+    if (survey.creator_id != userId) {
       throw new UnauthorizedError("Only the creator can perform this action.");
     }
   }
 
-  ensureCanShare(users) {
+  ensureCanShareTo(users) {
     if (users.some((u) => u.role !== USER_ROLES.ADMIN)) {
       throw new UnauthorizedError("Can only share with ADMIN users.");
     }

@@ -38,14 +38,18 @@ class SurveyController {
 
   async share(req, res) {
     const surveyId = req.params.surveyId;
+    const { id: userId } = req.user;
+
     const { userIds } = req.body;
 
     this.surveyValidator.validateSharePayload(userIds);
 
-    await this.surveyService.getById(surveyId);
+    const survey = await this.surveyService.getById(surveyId);
     const users = await this.userService.getUsersByIds(userIds);
 
-    this.surveyPolicy.ensureCanShare(users);
+    this.surveyPolicy.ensureCanShareTo(users);
+    this.surveyPolicy.ensureIsCreator(survey, userId);
+
     await this.surveyService.shareAccess(surveyId, userIds);
 
     res.json({ success: true, message: "Survey access shared successfully." });
