@@ -13,6 +13,8 @@ class SurveyController {
     this.addAnswers = this.addAnswers.bind(this);
     this.getUserAnswers = this.getUserAnswers.bind(this);
     this.getAllUserAnswers = this.getAllUserAnswers.bind(this);
+    this.getUserAnswersByAdmin = this.getUserAnswersByAdmin.bind(this);
+    this.getAggregatedResults = this.getAggregatedResults.bind(this);
   }
 
   async create(req, res) {
@@ -103,6 +105,22 @@ class SurveyController {
 
     const answers = await this.surveyService.getAllAnswersByUserId(userId);
     res.json({ success: true, answers });
+  }
+
+  async getUserAnswersByAdmin(req, res) {
+    const surveyId = req.params.surveyId;
+    const userId = req.params.userId;
+
+    const answers = await this.surveyService.getAnswersBySurveyIdAndUserId(surveyId, userId);
+
+    res.json({ success: true, answers });
+  }
+
+  async getAggregatedResults(req, res) {
+    const surveyId = req.params.surveyId;
+
+    const results = await this.surveyService.getAggregatedResults(surveyId);
+    res.json({ success: true, results });
   }
 }
 

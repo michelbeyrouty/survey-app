@@ -108,6 +108,10 @@ class SurveyService {
   async getAllAnswersByUserId(userId) {
     return await this.db.query(SURVEY_QUERIES.GET_ALL_ANSWERS_BY_USER_ID, [userId]);
   }
+
+  async getAggregatedResults(surveyId) {
+    return await this.db.query(SURVEY_QUERIES.GET_AGGREGATED_SURVEY_STATS, [surveyId]);
+  }
 }
 
 module.exports = SurveyService;

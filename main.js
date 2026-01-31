@@ -31,7 +31,10 @@ function createApp() {
   app.get("/surveys/:surveyId/answers", requireAnswerer(), asyncHandler(surveyController.getUserAnswers));
   app.get("/surveys/answers", requireAnswerer(), asyncHandler(surveyController.getAllUserAnswers));
   app.get("/surveys/:surveyId", requireAnyRole(), asyncHandler(surveyController.getById));
+  app.get("/surveys/:surveyId/stats", requireAdmin(), asyncHandler(surveyController.getAggregatedResults));
   app.post("/surveys/:surveyId/share", requireAdmin(), asyncHandler(surveyController.share));
+
+  app.get("/users/:userId/surveys/:surveyId/answers", requireAdmin(), asyncHandler(surveyController.getUserAnswersByAdmin));
 
   app.use(errorHandlerMiddleware);
 

@@ -187,6 +187,22 @@ const SURVEY_QUERIES = {
               ON q.survey_id = s.id
             WHERE a.user_id = ?
             ORDER BY s.id, q.id;`,
+  GET_AGGREGATED_SURVEY_STATS: `
+            SELECT
+              q.id AS question_id,
+              q.text,
+              q.type,
+              COUNT(a.id) AS response_count,
+              AVG(CAST(a.value AS INTEGER)) AS average_rating,
+              MIN(CAST(a.value AS INTEGER)) AS min_rating,
+              MAX(CAST(a.value AS INTEGER)) AS max_rating
+            FROM questions q
+            LEFT JOIN answers a ON a.question_id = q.id
+            WHERE q.survey_id = ?
+              AND q.type = 'RATING'
+            GROUP BY q.id
+            ORDER BY q.id;
+`,
 };
 
 const USER_QUERIES = {
