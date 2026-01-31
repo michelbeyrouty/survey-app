@@ -1,4 +1,5 @@
 const { SURVEY_QUERIES } = require("./queries");
+const NotFoundError = require("../errors/NotFoundError");
 
 class SurveyService {
   constructor(db) {
@@ -54,6 +55,7 @@ class SurveyService {
     return {
       ...rows[0],
       questions: JSON.parse(rows[0].questions),
+      access_users: JSON.parse(rows[0].access_users),
     };
   }
 

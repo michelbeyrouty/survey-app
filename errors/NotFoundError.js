@@ -1,11 +1,11 @@
-const AppError = require('./AppError');
+const AppError = require("./AppError");
 
 class NotFoundError extends AppError {
-  constructor(message, code = 'NOT_FOUND') {
+  constructor(message, code = "NOT_FOUND") {
     super({
       message,
       code,
-      statusCode: 404
+      statusCode: 404,
     });
   }
 }

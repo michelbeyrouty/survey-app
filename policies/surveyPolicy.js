@@ -25,7 +25,7 @@ class SurveyPolicy {
   }
 
   canListAll(user) {
-    return user.role === USER_ROLES.ADMIN;
+    return user.role !== USER_ROLES.ADMIN;
   }
 }
 
