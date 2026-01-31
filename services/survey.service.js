@@ -85,6 +85,29 @@ class SurveyService {
       throw err;
     }
   }
+
+  async addAnswers(userId, answers) {
+    await this.db.run("BEGIN");
+
+    try {
+      for (const a of answers) {
+        await this.db.run(SURVEY_QUERIES.CREATE_ANSWERS, [a.question_id, userId, a.value]);
+      }
+
+      await this.db.run("COMMIT");
+    } catch (err) {
+      await this.db.run("ROLLBACK");
+      throw err;
+    }
+  }
+
+  async getAnswersBySurveyIdAndUserId(surveyId, userId) {
+    return await this.db.query(SURVEY_QUERIES.GET_ANSWERS_BY_SURVEY_ID_AND_USER_ID, [surveyId, userId]);
+  }
+
+  async getAllAnswersByUserId(userId) {
+    return await this.db.query(SURVEY_QUERIES.GET_ALL_ANSWERS_BY_USER_ID, [userId]);
+  }
 }
 
 module.exports = SurveyService;

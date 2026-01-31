@@ -10,7 +10,9 @@ class SurveyController {
     this.addQuestion = this.addQuestion.bind(this);
     this.list = this.list.bind(this);
     this.create = this.create.bind(this);
-    this.addResponse = this.addResponse.bind(this);
+    this.addAnswers = this.addAnswers.bind(this);
+    this.getUserAnswers = this.getUserAnswers.bind(this);
+    this.getAllUserAnswers = this.getAllUserAnswers.bind(this);
   }
 
   async create(req, res) {
@@ -70,20 +72,37 @@ class SurveyController {
     res.json({ success: true, message: "Questions added successfully." });
   }
 
-  async addResponse(req, res) {
+  async addAnswers(req, res) {
     const surveyId = req.params.surveyId;
-    const { responses } = req.body;
+    const userId = req.user.id;
+    const { answers } = req.body;
 
-    this.surveyValidator.validateResponses(responses);
+    this.surveyValidator.validateAnswers(answers);
 
     const survey = await this.surveyService.getById(surveyId);
 
-    this.surveyValidator.validateQuestionsExist(responses, survey.questions);
-    this.surveyValidator.validateResponsesMatchQuestions(responses, survey.questions);
+    this.surveyPolicy.validateQuestionsExist(answers, survey.questions);
+    this.surveyPolicy.validateAnswersMatchQuestions(answers, survey.questions);
 
-    await this.surveyService.addResponses(surveyId, responses);
+    await this.surveyService.addAnswers(userId, answers);
 
-    res.json({ success: true, message: "Response added successfully." });
+    res.json({ success: true, message: "Answers added successfully." });
+  }
+
+  async getUserAnswers(req, res) {
+    const surveyId = req.params.surveyId;
+    const userId = req.user.id;
+
+    const answers = await this.surveyService.getAnswersBySurveyIdAndUserId(surveyId, userId);
+
+    res.json({ success: true, answers });
+  }
+
+  async getAllUserAnswers(req, res) {
+    const userId = req.user.id;
+
+    const answers = await this.surveyService.getAllAnswersByUserId(userId);
+    res.json({ success: true, answers });
   }
 }
 

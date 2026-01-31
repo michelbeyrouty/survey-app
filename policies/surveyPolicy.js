@@ -1,4 +1,5 @@
 const UnauthorizedError = require("../errors/UnauthorizedError");
+const BadRequestError = require("../errors/BadRequestError");
 const { USER_ROLES } = require("../config/constants");
 
 class SurveyPolicy {
@@ -26,6 +27,33 @@ class SurveyPolicy {
 
   canListAll(user) {
     return user.role !== USER_ROLES.ADMIN;
+  }
+
+  validateQuestionsExist(answers, questions) {
+    const ids = new Set(questions.map((q) => q.id));
+    if (answers.some((r) => !ids.has(r.question_id))) {
+      throw new BadRequestError("One or more question IDs do not exist.");
+    }
+  }
+
+  validateAnswersMatchQuestions(answers, questions) {
+    for (const answer of answers) {
+      const question = questions.find((q) => q.id === answer.question_id);
+
+      switch (question.type) {
+        case "TEXT":
+          if (typeof answer.value !== "string") throw new BadRequestError("Expected string answer.");
+          break;
+        case "RATING":
+          if (typeof answer.value !== "number" || answer.value < question.rating_min || answer.value > question.rating_max) {
+            throw new BadRequestError("Invalid rating value.");
+          }
+          break;
+        case "BOOLEAN":
+          if (typeof answer.value !== "boolean") throw new BadRequestError("Expected boolean answer.");
+          break;
+      }
+    }
   }
 }
 

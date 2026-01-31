@@ -47,36 +47,9 @@ class SurveyValidator {
     });
   }
 
-  validateResponses(responses) {
-    if (!Array.isArray(responses) || responses.length === 0) {
-      throw new BadRequestError("Responses must be a non-empty array.");
-    }
-  }
-
-  validateQuestionsExist(responses, questions) {
-    const ids = new Set(questions.map((q) => q.id));
-    if (responses.some((r) => !ids.has(r.question_id))) {
-      throw new BadRequestError("One or more question IDs do not exist.");
-    }
-  }
-
-  validateResponsesMatchQuestions(responses, questions) {
-    for (const resp of responses) {
-      const question = questions.find((q) => q.id === resp.question_id);
-
-      switch (question.type) {
-        case "TEXT":
-          if (typeof resp.value !== "string") throw new BadRequestError("Expected string response.");
-          break;
-        case "RATING":
-          if (typeof resp.value !== "number" || resp.value < question.rating_min || resp.value > question.rating_max) {
-            throw new BadRequestError("Invalid rating value.");
-          }
-          break;
-        case "BOOLEAN":
-          if (typeof resp.value !== "boolean") throw new BadRequestError("Expected boolean response.");
-          break;
-      }
+  validateAnswers(answers) {
+    if (!Array.isArray(answers) || answers.length === 0) {
+      throw new BadRequestError("Answers must be a non-empty array.");
     }
   }
 }

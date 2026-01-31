@@ -151,6 +151,42 @@ const SURVEY_QUERIES = {
                 SELECT id, type, rating_min, rating_max
                 FROM questions
                 WHERE survey_id = ?;`,
+
+  CREATE_ANSWERS: `
+              INSERT INTO answers (question_id, user_id, value)
+              VALUES (?, ?, ?)
+              ON CONFLICT(question_id, user_id) DO UPDATE SET value=excluded.value;
+      `,
+
+  GET_ANSWERS_BY_SURVEY_ID_AND_USER_ID: `
+            SELECT
+              a.id AS answer_id,
+              q.id AS question_id,
+              q.text,
+              q.type,
+              a.value
+            FROM questions q
+            LEFT JOIN answers a
+              ON a.question_id = q.id
+            WHERE q.survey_id = ?
+              AND a.user_id = ?
+            ORDER BY q.id;`,
+  GET_ALL_ANSWERS_BY_USER_ID: `
+              SELECT
+              q.id AS question_id,
+              a.id AS answer_id,
+              q.text,
+              q.type,
+              a.value,
+              s.id AS survey_id,
+              s.title AS survey_title
+            FROM answers a
+            JOIN questions q
+              ON a.question_id = q.id
+            JOIN surveys s
+              ON q.survey_id = s.id
+            WHERE a.user_id = ?
+            ORDER BY s.id, q.id;`,
 };
 
 const USER_QUERIES = {
