@@ -24,11 +24,21 @@ class AnswerService {
   }
 
   async getAllByUserId(userId) {
-    return this.db.query(SURVEY_QUERIES.GET_ALL_ANSWERS_BY_USER_ID, [userId]);
+    const rows = await this.db.query(SURVEY_QUERIES.GET_ALL_ANSWERS_BY_USER_ID, [userId]);
+
+    return rows.map((row) => ({
+      ...row,
+      answers: JSON.parse(row.answers),
+    }));
   }
 
-  async getAggregatedResults(surveyId) {
-    return this.db.query(SURVEY_QUERIES.GET_AGGREGATED_SURVEY_STATS, [surveyId]);
+  async getAggregatedResults() {
+    const rows = await this.db.query(SURVEY_QUERIES.GET_AGGREGATED_SURVEY_STATS);
+
+    return rows.map((row) => ({
+      ...row,
+      questions: JSON.parse(row.questions),
+    }));
   }
 }
 

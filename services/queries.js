@@ -172,59 +172,60 @@ const SURVEY_QUERIES = {
               AND a.user_id = ?
             ORDER BY q.id;`,
   GET_ALL_ANSWERS_BY_USER_ID: `
-              SELECT
-              q.id AS question_id,
-              a.id AS answer_id,
-              q.text,
-              q.type,
-              a.value,
-              s.id AS survey_id,
-              s.title AS survey_title
-            FROM answers a
-            JOIN questions q
-              ON a.question_id = q.id
-            JOIN surveys s
-              ON q.survey_id = s.id
-            WHERE a.user_id = ?
-            ORDER BY s.id, q.id;`,
-  GET_AGGREGATED_SURVEY_STATS: `
             SELECT
-              q.id AS question_id,
-              q.text,
-              q.type,
-
-              COUNT(a.id) AS total_responses,
-
-              -- Only meaningful for RATING questions
-              AVG(
-                CASE
-                  WHEN q.type = 'RATING'
-                  THEN CAST(a.value AS INTEGER)
-                  ELSE NULL
-                END
-              ) AS average_rating,
-
-              -- Only meaningful for BOOLEAN questions
-              SUM(
-                CASE
-                  WHEN q.type = 'BOOLEAN' AND a.value = 'true'
-                  THEN 1 ELSE 0
-                END
-              ) AS true_count,
-
-              SUM(
-                CASE
-                  WHEN q.type = 'BOOLEAN' AND a.value = 'false'
-                  THEN 1 ELSE 0
-                END
-              ) AS false_count
-
-            FROM questions q
-            LEFT JOIN answers a
-              ON a.question_id = q.id
-            WHERE q.survey_id = ?
-            GROUP BY q.id
-            ORDER BY q.id;
+              s.id AS survey_id,
+              s.title AS survey_title,
+              json_group_array(
+                json_object(
+                  'answer_id', a.id,
+                  'question_id', q.id,
+                  'text', q.text,
+                  'type', q.type,
+                  'value', a.value
+                )
+              ) AS answers
+            FROM answers a
+            JOIN questions q ON a.question_id = q.id
+            JOIN surveys s ON q.survey_id = s.id
+            WHERE a.user_id = ?
+            GROUP BY s.id
+            ORDER BY s.id;
+`,
+  GET_AGGREGATED_SURVEY_STATS: `
+            WITH question_stats AS (
+              SELECT
+                q.id AS question_id,
+                q.survey_id,
+                q.text,
+                q.type,
+                COUNT(a.id) AS total_responses,
+                AVG(CASE WHEN q.type = 'RATING' THEN CAST(a.value AS INTEGER) ELSE NULL END) AS average_rating,
+                SUM(CASE WHEN q.type = 'BOOLEAN' AND a.value = 'true' THEN 1 ELSE 0 END) AS true_count,
+                SUM(CASE WHEN q.type = 'BOOLEAN' AND a.value = 'false' THEN 1 ELSE 0 END) AS false_count
+              FROM questions q
+              LEFT JOIN answers a ON a.question_id = q.id
+              GROUP BY q.id
+            )
+            SELECT
+              s.id AS survey_id,
+              s.title AS survey_title,
+              COALESCE(
+                json_group_array(
+                  json_object(
+                    'question_id', qs.question_id,
+                    'text', qs.text,
+                    'type', qs.type,
+                    'total_responses', qs.total_responses,
+                    'average_rating', qs.average_rating,
+                    'true_count', qs.true_count,
+                    'false_count', qs.false_count
+                  )
+                ),
+                '[]'
+              ) AS questions
+            FROM surveys s
+            LEFT JOIN question_stats qs ON qs.survey_id = s.id
+            GROUP BY s.id;
 `,
 };
 

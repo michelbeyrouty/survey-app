@@ -9,7 +9,7 @@ class AnswerController {
     this.getForUser = this.getForUser.bind(this);
     this.getAllUserAnswers = this.getAllUserAnswers.bind(this);
     this.getUserAnswersByAdmin = this.getUserAnswersByAdmin.bind(this);
-    this.getAggregated = this.getAggregated.bind(this);
+    this.getStats = this.getStats.bind(this);
   }
 
   async submit(req, res) {
@@ -41,14 +41,15 @@ class AnswerController {
   }
 
   async getUserAnswersByAdmin(req, res) {
-    const surveyId = req.params.surveyId;
-    const userId = req.params.userId;
-    const answers = await this.answerService.getBySurveyAndUser(surveyId, userId);
+    await this.surveyService.getById(req.params.surveyId);
+
+    const answers = await this.answerService.getBySurveyAndUser(req.params.surveyId, req.params.userId);
+
     res.json({ success: true, answers });
   }
 
-  async getAggregated(req, res) {
-    const results = await this.answerService.getAggregatedResults(req.params.surveyId);
+  async getStats(req, res) {
+    const results = await this.answerService.getAggregatedResults();
     res.json({ success: true, results });
   }
 }
