@@ -48,9 +48,9 @@ function createApp() {
   app.post("/surveys/:surveyId/share", requireAdmin(), asyncHandler(surveyController.share));
   app.post("/surveys/:surveyId/questions", requireAdmin(), asyncHandler(questionController.add));
 
+  app.get("/answers", requireAnswerer(), asyncHandler(answerController.getAllUserAnswers));
   app.get("/surveys/:surveyId/answers", requireAnswerer(), asyncHandler(answerController.getForUser));
   app.post("/surveys/:surveyId/answers", requireAnswerer(), asyncHandler(answerController.submit));
-  // app.get("/surveys/answers", requireAnswerer(), asyncHandler(surveyController.getAllUserAnswers));
 
   // app.get("/users/:userId/surveys/:surveyId/answers", requireAdmin(), asyncHandler(surveyController.getUserAnswersByAdmin));
   // app.get("/surveys/:surveyId/stats", requireAdmin(), asyncHandler(surveyController.getAggregatedResults));

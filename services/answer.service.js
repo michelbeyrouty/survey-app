@@ -23,6 +23,10 @@ class AnswerService {
     return this.db.query(SURVEY_QUERIES.GET_ANSWERS_BY_SURVEY_ID_AND_USER_ID, [surveyId, userId]);
   }
 
+  async getAllByUserId(userId) {
+    return this.db.query(SURVEY_QUERIES.GET_ALL_ANSWERS_BY_USER_ID, [userId]);
+  }
+
   async getAggregatedResults(surveyId) {
     return this.db.query(SURVEY_QUERIES.GET_AGGREGATED_SURVEY_STATS, [surveyId]);
   }
