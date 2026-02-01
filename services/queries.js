@@ -192,14 +192,37 @@ const SURVEY_QUERIES = {
               q.id AS question_id,
               q.text,
               q.type,
-              COUNT(a.id) AS response_count,
-              AVG(CAST(a.value AS INTEGER)) AS average_rating,
-              MIN(CAST(a.value AS INTEGER)) AS min_rating,
-              MAX(CAST(a.value AS INTEGER)) AS max_rating
+
+              COUNT(a.id) AS total_responses,
+
+              -- Only meaningful for RATING questions
+              AVG(
+                CASE
+                  WHEN q.type = 'RATING'
+                  THEN CAST(a.value AS INTEGER)
+                  ELSE NULL
+                END
+              ) AS average_rating,
+
+              -- Only meaningful for BOOLEAN questions
+              SUM(
+                CASE
+                  WHEN q.type = 'BOOLEAN' AND a.value = 'true'
+                  THEN 1 ELSE 0
+                END
+              ) AS true_count,
+
+              SUM(
+                CASE
+                  WHEN q.type = 'BOOLEAN' AND a.value = 'false'
+                  THEN 1 ELSE 0
+                END
+              ) AS false_count
+
             FROM questions q
-            LEFT JOIN answers a ON a.question_id = q.id
+            LEFT JOIN answers a
+              ON a.question_id = q.id
             WHERE q.survey_id = ?
-              AND q.type = 'RATING'
             GROUP BY q.id
             ORDER BY q.id;
 `,

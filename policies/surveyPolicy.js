@@ -9,6 +9,15 @@ class SurveyPolicy {
     }
   }
 
+  ensureHasAccess(survey, userId) {
+    if (survey.creator_id == userId) return;
+
+    const hasAccess = survey.access_users.some((u) => u.user_id === userId);
+    if (!hasAccess) {
+      throw new UnauthorizedError("No access to this survey.");
+    }
+  }
+
   ensureCanShareTo(users) {
     if (users.some((u) => u.role !== USER_ROLES.ADMIN)) {
       throw new UnauthorizedError("Can only share with ADMIN users.");

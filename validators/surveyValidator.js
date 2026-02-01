@@ -14,12 +14,6 @@ class SurveyValidator {
     }
   }
 
-  validateSharePayload(userIds) {
-    if (!Array.isArray(userIds) || userIds.length === 0) {
-      throw new BadRequestError("userIds must be a non-empty array of positive integers.");
-    }
-  }
-
   validateQuestions(questions = []) {
     if (!Array.isArray(questions) || questions.length === 0) {
       throw new BadRequestError("Questions must be a non-empty array.");
@@ -45,6 +39,12 @@ class SurveyValidator {
         throw new BadRequestError(`Question ${index + 1}: rating_min/max only allowed for RATING.`);
       }
     });
+  }
+
+  validateSharePayload(userIds) {
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      throw new BadRequestError("userIds must be a non-empty array of positive integers.");
+    }
   }
 
   validateAnswers(answers) {

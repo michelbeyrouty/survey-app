@@ -26,13 +26,13 @@ function createApp() {
 
   app.get("/surveys", requireAnyRole(), asyncHandler(surveyController.list));
   app.post("/surveys", requireAdmin(), asyncHandler(surveyController.create));
-  app.post("/surveys/:surveyId/questions", requireAdmin(), asyncHandler(surveyController.addQuestion));
-  app.post("/surveys/:surveyId/answers", requireAnswerer(), asyncHandler(surveyController.addAnswers));
-  app.get("/surveys/:surveyId/answers", requireAnswerer(), asyncHandler(surveyController.getUserAnswers));
-  app.get("/surveys/answers", requireAnswerer(), asyncHandler(surveyController.getAllUserAnswers));
   app.get("/surveys/:surveyId", requireAnyRole(), asyncHandler(surveyController.getById));
-  app.get("/surveys/:surveyId/stats", requireAdmin(), asyncHandler(surveyController.getAggregatedResults));
   app.post("/surveys/:surveyId/share", requireAdmin(), asyncHandler(surveyController.share));
+  app.post("/surveys/:surveyId/questions", requireAdmin(), asyncHandler(surveyController.addQuestion));
+  app.get("/surveys/:surveyId/answers", requireAnswerer(), asyncHandler(surveyController.getUserAnswers));
+  app.post("/surveys/:surveyId/answers", requireAnswerer(), asyncHandler(surveyController.addAnswers));
+  app.get("/surveys/:surveyId/stats", requireAdmin(), asyncHandler(surveyController.getAggregatedResults));
+  app.get("/surveys/answers", requireAnswerer(), asyncHandler(surveyController.getAllUserAnswers));
 
   app.get("/users/:userId/surveys/:surveyId/answers", requireAdmin(), asyncHandler(surveyController.getUserAnswersByAdmin));
 

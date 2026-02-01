@@ -22,6 +22,7 @@ class SurveyController {
     const survey = req.body;
 
     this.surveyValidator.validateSurvey(survey);
+
     await this.surveyService.create(userId, survey.title, survey.questions);
 
     res.json({ success: true, message: "Survey created successfully." });
@@ -29,6 +30,7 @@ class SurveyController {
 
   async getById(req, res) {
     const survey = await this.surveyService.getById(req.params.surveyId);
+
     res.json({ success: true, survey });
   }
 
@@ -67,7 +69,7 @@ class SurveyController {
     this.surveyValidator.validateQuestions(questions);
 
     const survey = await this.surveyService.getById(surveyId);
-    this.surveyPolicy.ensureIsCreator(survey, userId);
+    this.surveyPolicy.ensureHasAccess(survey, userId);
 
     await this.surveyService.addQuestions(surveyId, questions);
 
