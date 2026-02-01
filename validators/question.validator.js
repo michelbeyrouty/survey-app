@@ -1,7 +1,7 @@
 const BadRequestError = require("../errors/BadRequestError");
 
 class QuestionValidator {
-  static TYPES = ["TEXT", "MULTIPLE_CHOICE", "RATING", "BOOLEAN"];
+  static TYPES = ["TEXT", "RATING", "BOOLEAN"];
 
   validateQuestions(questions) {
     if (!Array.isArray(questions) || questions.length === 0) {

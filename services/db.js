@@ -88,7 +88,7 @@ class Database {
           survey_id INTEGER NOT NULL,
           text TEXT NOT NULL,
           type TEXT NOT NULL CHECK (
-            type IN ('TEXT', 'MULTIPLE_CHOICE', 'RATING', 'BOOLEAN')
+            type IN ('TEXT', 'RATING', 'BOOLEAN')
           ),
           rating_min INTEGER,
           rating_max INTEGER,
