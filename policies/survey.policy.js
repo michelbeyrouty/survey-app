@@ -25,11 +25,9 @@ class SurveyPolicy {
   }
 
   ensureCanView(survey, user) {
-    if (user.role === USER_ROLES.ADMIN) return;
+    const hasAccess = survey.creator_id == user.id || survey.access_users.some((u) => u.user_id == user.id);
 
-    const hasAccess = survey.creator_id === user.id || survey.access_users.some((u) => u.user_id === user.id);
-
-    if (!hasAccess) {
+    if (user.role === USER_ROLES.ADMIN && !hasAccess) {
       throw new UnauthorizedError("No access to this survey.");
     }
   }

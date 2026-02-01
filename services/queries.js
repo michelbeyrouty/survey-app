@@ -152,7 +152,7 @@ const SURVEY_QUERIES = {
                 FROM questions
                 WHERE survey_id = ?;`,
 
-  CREATE_ANSWERS: `
+  CREATE_ANSWER: `
               INSERT INTO answers (question_id, user_id, value)
               VALUES (?, ?, ?)
               ON CONFLICT(question_id, user_id) DO UPDATE SET value=excluded.value;
