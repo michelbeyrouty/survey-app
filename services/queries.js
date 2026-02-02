@@ -159,7 +159,8 @@ const QUESTION_QUERIES = {
 const ANSWER_QUERIES = {
   CREATE_ANSWER: `
                 INSERT INTO answers (question_id, user_id, value)
-                VALUES (?, ?, ?);
+                VALUES (?, ?, ?)
+                ON CONFLICT(question_id, user_id) DO UPDATE SET value = excluded.value;
   `,
 
   GET_ANSWERS_BY_SURVEY_ID_AND_USER_ID: `

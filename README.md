@@ -149,6 +149,7 @@ Pass user info via headers:
 ## Notes
 
 - Each answerer can submit only one set of answers per survey (upsert on conflict)
+- Assuming that the right combination of userId and role are sent as headers
 - TODO: Add unit and integration tests
 - TODO: Move database to external service (e.g., PostgreSQL, MySQL) instead of having it locally
 

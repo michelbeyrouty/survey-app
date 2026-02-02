@@ -1,7 +1,8 @@
 class AnswerController {
-  constructor(answerService, surveyService, answerValidator, answerPolicy) {
+  constructor(answerService, surveyService, userService, answerValidator, answerPolicy) {
     this.answerService = answerService;
     this.surveyService = surveyService;
+    this.userService = userService;
     this.answerValidator = answerValidator;
     this.answerPolicy = answerPolicy;
 
@@ -16,6 +17,7 @@ class AnswerController {
     const { answers } = req.body;
 
     this.answerValidator.validateSubmit(req.body);
+    await this.userService.getById(req.user.id);
 
     const survey = await this.surveyService.getById(req.params.surveyId);
 

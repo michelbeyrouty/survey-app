@@ -39,7 +39,7 @@ function createApp() {
 
   const surveyController = new SurveyController(surveyService, questionService, userService, surveyValidator, questionValidator, surveyPolicy);
   const questionController = new QuestionController(questionService, surveyService, questionValidator, surveyPolicy);
-  const answerController = new AnswerController(answerService, surveyService, answerValidator, answerPolicy);
+  const answerController = new AnswerController(answerService, surveyService, userService, answerValidator, answerPolicy);
   const healthController = new HealthController();
 
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

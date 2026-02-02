@@ -1,5 +1,5 @@
 const { USER_QUERIES } = require("./queries");
-const NotFoundError = require("../errors/NotFoundError");
+const BadRequestError = require("../errors/BadRequestError");
 
 class UserService {
   constructor(db) {
@@ -21,7 +21,7 @@ class UserService {
     const rows = await this.db.query(USER_QUERIES.GET_USER_BY_ID, [userId]);
 
     if (rows.length === 0) {
-      throw new NotFoundError(`User ${userId} not found`);
+      throw new BadRequestError(`User ${userId} not found`);
     }
 
     return rows[0];

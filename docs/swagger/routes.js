@@ -188,7 +188,7 @@
  *                   type: integer
  *                 description: Array of user IDs to share with
  *           example:
- *             userIds: [2, 3]
+ *             userIds: [2]
  *     responses:
  *       200:
  *         description: Survey access shared successfully
