@@ -42,6 +42,9 @@
  *     summary: List all surveys
  *     description: Returns all surveys. Admins see surveys they have access to, answerers see surveys shared with them.
  *     tags: [Surveys]
+ *     parameters:
+ *       - $ref: '#/components/parameters/userId'
+ *       - $ref: '#/components/parameters/userRole'
  *     responses:
  *       200:
  *         description: List of surveys
@@ -67,6 +70,9 @@
  *     summary: Create a new survey
  *     description: Create a new survey with optional questions. Requires ADMIN role.
  *     tags: [Surveys]
+ *     parameters:
+ *       - $ref: '#/components/parameters/userId'
+ *       - $ref: '#/components/parameters/userRole'
  *     requestBody:
  *       required: true
  *       content:
@@ -123,6 +129,8 @@
  *     summary: Get survey by ID
  *     tags: [Surveys]
  *     parameters:
+ *       - $ref: '#/components/parameters/userId'
+ *       - $ref: '#/components/parameters/userRole'
  *       - in: path
  *         name: surveyId
  *         required: true
@@ -157,6 +165,8 @@
  *     description: Grant access to the survey for specified admin users. Requires ADMIN role.
  *     tags: [Surveys]
  *     parameters:
+ *       - $ref: '#/components/parameters/userId'
+ *       - $ref: '#/components/parameters/userRole'
  *       - in: path
  *         name: surveyId
  *         required: true
@@ -208,6 +218,8 @@
  *     description: Add new questions to an existing survey. Requires ADMIN role.
  *     tags: [Questions]
  *     parameters:
+ *       - $ref: '#/components/parameters/userId'
+ *       - $ref: '#/components/parameters/userRole'
  *       - in: path
  *         name: surveyId
  *         required: true
@@ -262,6 +274,8 @@
  *     description: Get the current user's answers for a specific survey. Requires ANSWERER role.
  *     tags: [Answers]
  *     parameters:
+ *       - $ref: '#/components/parameters/userId'
+ *       - $ref: '#/components/parameters/userRole'
  *       - in: path
  *         name: surveyId
  *         required: true
@@ -294,6 +308,8 @@
  *     description: Submit answers to a survey. Each answerer can only submit one set of answers per survey (upsert on conflict). Requires ANSWERER role.
  *     tags: [Answers]
  *     parameters:
+ *       - $ref: '#/components/parameters/userId'
+ *       - $ref: '#/components/parameters/userRole'
  *       - in: path
  *         name: surveyId
  *         required: true
@@ -349,6 +365,9 @@
  *     summary: Get all user's answers
  *     description: Get all answers submitted by the current user across all surveys. Requires ANSWERER role.
  *     tags: [Answers]
+ *     parameters:
+ *       - $ref: '#/components/parameters/userId'
+ *       - $ref: '#/components/parameters/userRole'
  *     responses:
  *       200:
  *         description: All user's answers grouped by survey
@@ -382,6 +401,8 @@
  *     description: Get answers submitted by a specific user for a specific survey. Requires ADMIN role.
  *     tags: [Answers]
  *     parameters:
+ *       - $ref: '#/components/parameters/userId'
+ *       - $ref: '#/components/parameters/userRole'
  *       - in: path
  *         name: userId
  *         required: true
@@ -423,6 +444,9 @@
  *     summary: Get aggregated survey statistics
  *     description: Get aggregated statistics for all surveys including response counts, average ratings, and boolean counts. Requires ADMIN role.
  *     tags: [Statistics]
+ *     parameters:
+ *       - $ref: '#/components/parameters/userId'
+ *       - $ref: '#/components/parameters/userRole'
  *     responses:
  *       200:
  *         description: Aggregated survey statistics

@@ -15,18 +15,27 @@ const options = {
       },
     ],
     components: {
-      securitySchemes: {
+      parameters: {
         userId: {
-          type: "apiKey",
+          name: "user-id",
           in: "header",
-          name: "x-user-id",
+          required: true,
+          schema: {
+            type: "integer",
+          },
           description: "User ID for authentication",
+          example: 1,
         },
         userRole: {
-          type: "apiKey",
+          name: "user-role",
           in: "header",
-          name: "x-user-role",
+          required: true,
+          schema: {
+            type: "string",
+            enum: ["ADMIN", "ANSWERER"],
+          },
           description: "User role (ADMIN or ANSWERER)",
+          example: "ADMIN",
         },
       },
       schemas: {
@@ -130,12 +139,6 @@ const options = {
         },
       },
     },
-    security: [
-      {
-        userId: [],
-        userRole: [],
-      },
-    ],
   },
   apis: ["./docs/swagger/*.js"],
 };
