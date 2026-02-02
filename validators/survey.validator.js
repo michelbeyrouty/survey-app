@@ -11,7 +11,7 @@ class SurveyValidator {
     }
   }
 
-  validateSharePayload(userIds) {
+  validateSharePayload({ userIds }) {
     if (!Array.isArray(userIds) || userIds.length === 0) {
       throw new BadRequestError("userIds must be a non-empty array.");
     }

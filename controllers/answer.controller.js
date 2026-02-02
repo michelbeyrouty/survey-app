@@ -13,18 +13,17 @@ class AnswerController {
   }
 
   async submit(req, res) {
-    const { surveyId } = req.params;
-    const userId = req.user.id;
     const { answers } = req.body;
 
-    this.answerValidator.validateSubmit(answers);
+    this.answerValidator.validateSubmit(req.body);
 
-    const survey = await this.surveyService.getById(surveyId);
+    const survey = await this.surveyService.getById(req.params.surveyId);
 
     this.answerPolicy.validateQuestionsExist(answers, survey.questions);
     this.answerPolicy.validateAnswersMatchQuestions(answers, survey.questions);
 
-    await this.answerService.addAnswers(userId, answers);
+    await this.answerService.addAnswers(req.user.id, answers);
+
     res.json({ success: true });
   }
 
@@ -50,6 +49,7 @@ class AnswerController {
 
   async getStats(req, res) {
     const results = await this.answerService.getAggregatedResults();
+
     res.json({ success: true, results });
   }
 }

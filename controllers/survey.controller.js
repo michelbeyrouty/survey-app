@@ -1,9 +1,10 @@
 class SurveyController {
-  constructor(surveyService, questionService, userService, surveyValidator, surveyPolicy) {
+  constructor(surveyService, questionService, userService, surveyValidator, questionValidator, surveyPolicy) {
     this.surveyService = surveyService;
     this.questionService = questionService;
     this.userService = userService;
     this.surveyValidator = surveyValidator;
+    this.questionValidator = questionValidator;
     this.surveyPolicy = surveyPolicy;
 
     this.create = this.create.bind(this);
@@ -13,16 +14,16 @@ class SurveyController {
   }
 
   async create(req, res) {
-    const userId = req.user.id;
     const { title, questions = [] } = req.body;
 
     this.surveyValidator.validateTitle(title);
+    this.questionValidator.validateQuestions(questions);
 
-    const surveyId = await this.surveyService.create(userId, title);
-
+    const surveyId = await this.surveyService.create(req.user.id, title);
     await this.questionService.addQuestions(surveyId, questions);
 
     const survey = await this.surveyService.getById(surveyId);
+
     res.json({ success: true, survey });
   }
 
@@ -44,18 +45,18 @@ class SurveyController {
 
   async share(req, res) {
     const surveyId = req.params.surveyId;
-    const userId = req.user.id;
     const { userIds } = req.body;
 
-    this.surveyValidator.validateSharePayload(userIds);
+    this.surveyValidator.validateSharePayload(req.body);
 
     const survey = await this.surveyService.getById(surveyId);
     const users = await this.userService.getUsersByIds(userIds);
 
-    this.surveyPolicy.ensureIsCreator(survey, userId);
+    this.surveyPolicy.ensureIsCreator(survey, req.user.id);
     this.surveyPolicy.ensureCanShareTo(users);
 
     await this.surveyService.shareAccess(surveyId, userIds);
+
     res.json({ success: true });
   }
 }

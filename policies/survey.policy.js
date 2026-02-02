@@ -3,6 +3,14 @@ const BadRequestError = require("../errors/BadRequestError");
 const { USER_ROLES } = require("../config/constants");
 
 class SurveyPolicy {
+  ensureCanView(survey, user) {
+    const hasAccess = survey.creator_id == user.id || survey.access_users.some((u) => u.user_id == user.id);
+
+    if (user.role === USER_ROLES.ADMIN && !hasAccess) {
+      throw new UnauthorizedError("No access to this survey.");
+    }
+  }
+
   ensureIsCreator(survey, userId) {
     if (survey.creator_id != userId) {
       throw new UnauthorizedError("Only the creator can perform this action.");
@@ -21,14 +29,6 @@ class SurveyPolicy {
   ensureCanShareTo(users) {
     if (users.some((u) => u.role !== USER_ROLES.ADMIN)) {
       throw new UnauthorizedError("Can only share with ADMIN users.");
-    }
-  }
-
-  ensureCanView(survey, user) {
-    const hasAccess = survey.creator_id == user.id || survey.access_users.some((u) => u.user_id == user.id);
-
-    if (user.role === USER_ROLES.ADMIN && !hasAccess) {
-      throw new UnauthorizedError("No access to this survey.");
     }
   }
 

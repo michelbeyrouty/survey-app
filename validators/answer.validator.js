@@ -1,7 +1,7 @@
 const BadRequestError = require("../errors/BadRequestError");
 
 class AnswerValidator {
-  validateSubmit(answers) {
+  validateSubmit({ answers }) {
     if (!Array.isArray(answers) || answers.length === 0) {
       throw new BadRequestError("Answers must be a non-empty array.");
     }

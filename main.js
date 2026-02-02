@@ -35,7 +35,7 @@ function createApp() {
   const surveyPolicy = new SurveyPolicy();
   const answerPolicy = new AnswerPolicy();
 
-  const surveyController = new SurveyController(surveyService, questionService, userService, surveyValidator, surveyPolicy);
+  const surveyController = new SurveyController(surveyService, questionService, userService, surveyValidator, questionValidator, surveyPolicy);
   const questionController = new QuestionController(questionService, surveyService, questionValidator, surveyPolicy);
   const answerController = new AnswerController(answerService, surveyService, answerValidator, answerPolicy);
   const healthController = new HealthController();
@@ -48,9 +48,9 @@ function createApp() {
   app.post("/surveys/:surveyId/share", requireAdmin(), asyncHandler(surveyController.share));
   app.post("/surveys/:surveyId/questions", requireAdmin(), asyncHandler(questionController.add));
 
-  app.get("/answers", requireAnswerer(), asyncHandler(answerController.getAllUserAnswers));
   app.get("/surveys/:surveyId/answers", requireAnswerer(), asyncHandler(answerController.getForUser));
   app.post("/surveys/:surveyId/answers", requireAnswerer(), asyncHandler(answerController.submit));
+  app.get("/answers", requireAnswerer(), asyncHandler(answerController.getAllUserAnswers));
 
   app.get("/users/:userId/surveys/:surveyId/answers", requireAdmin(), asyncHandler(answerController.getUserAnswersByAdmin));
   app.get("/statistics", requireAdmin(), asyncHandler(answerController.getStats));
