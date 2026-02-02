@@ -24,6 +24,8 @@ npm install
 
 ## Usage
 
+### Local Development
+
 ```bash
 # Development (with hot reload)
 npm run dev
@@ -36,6 +38,16 @@ npm test
 ```
 
 The server runs on `http://localhost:3000` by default.
+
+### Docker
+
+```bash
+# Build the image
+docker build -t survey-app .
+
+# Run the container
+docker run -p 3000:3000 survey-app
+```
 
 ## API Endpoints
 
@@ -123,14 +135,26 @@ Pass user info via headers:
 ```
 ├── config/          # Configuration constants
 ├── controllers/     # Route handlers and Business Logic handlers
+├── docs/            # Project documentation
 ├── errors/          # Custom error classes
 ├── middlewares/     # Express middleware
 ├── policies/        # Authorization policies
 ├── services/        # DB access
 ├── validators/      # Request validation
+├── Dockerfile       # Docker configuration
 ├── main.js          # App setup
 └── server.js        # Entry point
 ```
+
+## Notes
+
+- Each answerer can submit only one set of answers per survey (upsert on conflict)
+- TODO: Add unit and integration tests
+- TODO: Move database to external service (e.g., PostgreSQL, MySQL) instead of having it locally
+
+## Original Requirements
+
+See [docs/Developer_Take_Home_Project_1.pdf](docs/Developer_Take_Home_Project_1.pdf) for the original project instructions.
 
 ## License
 
