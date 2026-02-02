@@ -32,9 +32,6 @@ npm run dev
 
 # Production
 npm start
-
-# Run tests
-npm test
 ```
 
 The server runs on `http://localhost:3000` by default.
@@ -148,7 +145,7 @@ Pass user info via headers:
 
 ## Notes
 
-- Each answerer can submit only one set of answers per survey (upsert on conflict)
+- Each answerer can submit only one set of answers per survey
 - Assuming that the right combination of userId and role are sent as headers
 - TODO: Add unit and integration tests
 - TODO: Move database to external service (e.g., PostgreSQL, MySQL) instead of having it locally
