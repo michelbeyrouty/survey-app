@@ -1,4 +1,4 @@
-const { SURVEY_QUERIES } = require("./queries");
+const { ANSWER_QUERIES } = require("./queries");
 
 class AnswerService {
   constructor(db) {
@@ -10,7 +10,7 @@ class AnswerService {
 
     try {
       for (const a of answers) {
-        await this.db.run(SURVEY_QUERIES.CREATE_ANSWER, [a.question_id, userId, String(a.value)]);
+        await this.db.run(ANSWER_QUERIES.CREATE_ANSWER, [a.question_id, userId, String(a.value)]);
       }
       await this.db.run("COMMIT");
     } catch (e) {
@@ -20,11 +20,11 @@ class AnswerService {
   }
 
   async getBySurveyAndUser(surveyId, userId) {
-    return this.db.query(SURVEY_QUERIES.GET_ANSWERS_BY_SURVEY_ID_AND_USER_ID, [surveyId, userId]);
+    return this.db.query(ANSWER_QUERIES.GET_ANSWERS_BY_SURVEY_ID_AND_USER_ID, [surveyId, userId]);
   }
 
   async getAllByUserId(userId) {
-    const rows = await this.db.query(SURVEY_QUERIES.GET_ALL_ANSWERS_BY_USER_ID, [userId]);
+    const rows = await this.db.query(ANSWER_QUERIES.GET_ALL_ANSWERS_BY_USER_ID, [userId]);
 
     return rows.map((row) => ({
       ...row,
@@ -33,7 +33,7 @@ class AnswerService {
   }
 
   async getAggregatedResults() {
-    const rows = await this.db.query(SURVEY_QUERIES.GET_AGGREGATED_SURVEY_STATS);
+    const rows = await this.db.query(ANSWER_QUERIES.GET_AGGREGATED_SURVEY_STATS);
 
     return rows.map((row) => ({
       ...row,
