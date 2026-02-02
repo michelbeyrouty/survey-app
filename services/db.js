@@ -162,13 +162,13 @@ class Database {
 
     await this.run(`
       INSERT INTO answers (question_id, user_id, value) VALUES
-        (1, 2, '4'),
-        (2, 2, 'true'),
-        (3, 2, 'Great service overall'),
+        (1, 5, '4'),
+        (2, 5, 'true'),
+        (3, 5, 'Great service overall'),
         (1, 3, '5'),
         (2, 3, 'true'),
-        (4, 2, '8'),
-        (5, 2, 'Great design and features');
+        (4, 4, '8'),
+        (5, 4, 'Great design and features');
     `);
   }
 }
