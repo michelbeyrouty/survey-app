@@ -1,4 +1,6 @@
 const express = require("express");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./config/swagger");
 const DB = require("./services/db");
 const SurveyService = require("./services/survey.service");
 const QuestionService = require("./services/question.service");
@@ -39,6 +41,8 @@ function createApp() {
   const questionController = new QuestionController(questionService, surveyService, questionValidator, surveyPolicy);
   const answerController = new AnswerController(answerService, surveyService, answerValidator, answerPolicy);
   const healthController = new HealthController();
+
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   app.get("/health", asyncHandler(healthController.check));
 

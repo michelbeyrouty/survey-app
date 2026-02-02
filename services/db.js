@@ -7,10 +7,6 @@ class Database {
     this.dbPromise = null;
   }
 
-  /* =======================
-     Connection
-  ======================= */
-
   async getDb() {
     if (!this.dbPromise) {
       this.dbPromise = open({
@@ -43,10 +39,6 @@ class Database {
     }
   }
 
-  /* =======================
-     Initialization
-  ======================= */
-
   async init() {
     try {
       // Users
@@ -69,7 +61,7 @@ class Database {
         );
       `);
 
-      // Survey Access (many-to-many)
+      // Survey Access
       await this.run(`
         CREATE TABLE IF NOT EXISTS survey_access (
           survey_id INTEGER NOT NULL,
@@ -130,10 +122,6 @@ class Database {
       throw err;
     }
   }
-
-  /* =======================
-     Seed Data
-  ======================= */
 
   async seed() {
     await this.run(`
